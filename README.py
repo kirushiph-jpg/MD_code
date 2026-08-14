@@ -65,7 +65,7 @@ import MDAnalysis as mda
 from MDAnalysis.analysis import rms
 from MDAnalysis.analysis.hydrogenbonds.hbond_analysis import HydrogenBondAnalysis as HBA
 import plotly.graph_objects as go
-form MDAnalysis.analysis import align
+from MDAnalysis.analysis import align
 
 # =====================================================================
 # 0. FILE PATHS & UNIVERSES
