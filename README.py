@@ -55,7 +55,6 @@ print("Production done", flush=True)
 
 #Analysis
 
-
 !pip install MDAnalysis plotly pandas numpy
 
 import os
@@ -66,6 +65,7 @@ import MDAnalysis as mda
 from MDAnalysis.analysis import rms
 from MDAnalysis.analysis.hydrogenbonds.hbond_analysis import HydrogenBondAnalysis as HBA
 import plotly.graph_objects as go
+form MDAnalysis.analysis import align
 
 # =====================================================================
 # 0. FILE PATHS & UNIVERSES
@@ -74,8 +74,11 @@ pdb_trajectory_1="/kaggle/input/datasets/kirushi/100-ns-md/100_ns_DCD.dcd"
 pdb_trajectory_2 = "/kaggle/input/datasets/kirushi/100-200-ns-md/100_200_ns_trajectory.dcd"
 prmtop_path = "/kaggle/input/datasets/kirushi/100-ns-md/complex_pro_pep.prmtop"
 
-u = mda.Universe(prmtop_path, [pdb_trajectory_1,pdb_trajectory_2])
-ref = mda.Universe(prmtop_path, [pdb_trajectory_1,pdb_trajectory_2])  # Reference frame 0
+u = mda.Universe(prmtop_path, [pdb_trajectory_1,pdb_trajectory_2],in_memory=True)
+ref = mda.Universe(prmtop_path, [pdb_trajectory_1,pdb_trajectory_2],in_memory=True)  # Reference frame 0
+
+Align_u=align.AlignTraj(u,u,select="protein and name CA and not resid 167-171",ref_frame=0,in_memory=True).run()
+Align_ref=align.AlignTraj(ref,ref,select="protein and name CA and not resid 167-171",ref_frame=0,in_memory=True).run()
 
 # Determine Ligand Residue Name (defaults to UNL, falls back to LIG)
 ligand_sel = "resname UNL"
@@ -218,8 +221,8 @@ from MDAnalysis.analysis import rms
 import plotly.graph_objects as go
 
 
-u_complex=mda.Universe("/kaggle/input/datasets/kirushi/100-ns-md/complex_pro_pep.prmtop",["/kaggle/input/datasets/kirushi/100-ns-md/100_ns_DCD.dcd","/kaggle/input/datasets/kirushi/100-200-ns-md/100_200_ns_trajectory.dcd"])
-calphas = u_complex.select_atoms("protein and name CA and not resid 167-171")
+
+calphas = u.select_atoms("protein and name CA and not resid 167-171")
 
 print("Calculating RMSF...")
 rmsf_analysis = rms.RMSF(calphas).run()
@@ -271,3 +274,4 @@ fig_rg.update_layout(
 fig_rg.show()
 
 fig_rg.write_html("Rg_plot_0_200_ns.html")
+
